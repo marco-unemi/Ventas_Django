@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="mx-4">
+        <a class="btn btn-danger btn-sm px-4" href="{% url 'ventas:products' %}">Atras</a>
+    </div>
+    {% if error_message %}
+    <div class="alert alert-danger d-flex align-items-center mt-5" role="alert" id="error-alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <div>
+            {{ error_message }}
+        </div>
+        <button type="button" class="btn-close mx-2" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="col my-5 pt-5">
+            <div class="card text-center bg-black w-75 mx-auto">
+                <div class="card-header text-info border-white">
+                    <h3>{{ title2 }}</h3>
+                </div>
+                <div class="card-body text-white">
+                    <form method="POST" id="ProductForm">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-sm-6 mb-3">
+                                <label for="id_description" class="form-label">Article:</label>
+                                <input type="text" name="description" class="form-control" required value="{{ product.description }}"
+                                    id="id_description">
+                            </div>
+
+                            <div class="col-sm-6 mb-3">
+                                <label for="id_price" class="form-label">Price:</label>
+                                <input type="number" name="price" class="form-control" step="0.01" min="0.01"
+                                    required value="{{ product.price }}" id="id_price">
+                            </div>
+
+                            <div class="row m-0 p-0 align-items-center">
+                                <div class="col-sm-6 mb-3">
+                                    <label for="id_stock" class="form-label">Stock:</label>
+                                    <input type="number" name="stock" class="form-control" required value="{{ product.stock }}" id="id_stock"
+                                        aria-describedby="stockHelpInline">
+                                </div>
+                                <div class="col-sm-6 mb-3 mt-4">
+                                    <span id="stockHelpInline" class="form-text">
+                                        Stock must be between 0 and 10000 units.
+                                    </span>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="col-sm-6 mb-3">
+                                <label for="id_brand" class="form-label">Brand:</label>
+                                <select name="brand" class="form-select" required="" id="id_brand">
+                                    {% for brand in brands %}
+                                        <option value="{{ brand.id }}" {% if product.brand_id == brand.id %}selected{% endif %}>{{ brand.description }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-sm-6 mb-3">
+                                <label for="id_expiration_date" class="form-label">Expiration Date:</label>
+                                <input type="text" name="expiration_date" class="form-control" value="{{ product.expiration_date|date:'d/m/Y  , P' }}" required=""
+                                    id="id_expiration_date">
+                            </div>
+
+                            <div class="col-sm-6 mb-3">
+                                <label for="id_line" class="form-label">Linea:</label>
+                                <select name="line" class="form-select" id="id_line">
+                                    {% for value, label in status_choices %}
+                                    <option value="{{ value }}" {% if product.line == value %}selected{% endif %}>
+                                        {{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-sm-6 mb-3">
+                                <label for="id_categories" class="form-label">Category:</label>
+                                <select name="categories" class="form-select" required="" id="id_categories" multiple>
+                                    {% for category in categories %}
+                                        <option value="{{ category.id }}" {% if product.category_id == category.id %}selected{% endif %}>{{ category.description }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-sm-6 mb-3">
+                                <label for="id_image" class="form-label">Image:</label>
+                                <input type="file" name="image" class="form-control" accept="image/*" id="id_image" value="{{ product.image }}">
+                            </div>
+
+                            <hr>
+
+                            <div class="col-sm-6 mb-3">
+                                <label for="id_supplier" class="form-label">Supplier:</label>
+                                <select name="supplier" class="form-select" required id="id_supplier">                               
+                                    {% for supplier in suppliers %}
+                                        <option value="{{ supplier.id }}" {% if product.supplier_id == supplier.id %}selected{% endif %}>{{ supplier.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-sm-6 mb-3">
+                                <label for="id_user" class="form-label">User:</label>
+                                <select name="user" class="form-select" required id="id_user">
+                                    {% for user in users %}
+                                    <option value="{{ user.id }}" {% if product.user_id == user.id %}selected{% endif %}>{{ user.username }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-sm-6 my-3">
+                                <label for="id_state" class="form-label">State:</label>
+                                <input type="checkbox" name="state" class="form-check-input" id="id_state" checked value="product.state">
+                            </div>
+
+                            <div class="col-12 text-end border-white mt-3">
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

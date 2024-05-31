@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-2">
+    <div class="row">
+        <div class="col-12 d-flex justify-content-between">
+            <div class="d-flex align-items-center">
+                <a class="btn btn-danger btn-sm px-4" href="{% url 'ventas:products' %}">Atrás</a>
+            </div>
+            <h1>{{ title2 }}</h1>
+            <div></div>
+        </div>
+    </div>
+    <br><br>
+
+    <div class="row">
+        <div class="col-12 text-center">
+            <img src="{{ product.image.url }}" alt="Producto imagen" class="img-fluid" style="border-radius: 20px;">
+        </div>
+    </div>
+    <br><br>
+   
+    <table class="table table-bordered mt-3">
+        <thead class="thead-dark">
+            <tr>
+                <th>ID</th>
+                <th>Description</th>
+                <th>Supplier</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Created</th>
+                <th>Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="text-center">{{ product.id }}</td>
+                <td class="text-center">{{ product.description }}</td>
+                <td class="text-center">{{ product.supplier }}</td>
+                <td class="text-center">{{ product.price }}</td>
+                <td class="text-center">{{ product.stock }}</td>
+                <td class="text-center">{{ product.created|date:"d/m/Y , P" }}</td>
+                <td class="text-center">{{ product.updated|date:"d/m/Y , P" }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock content %}
