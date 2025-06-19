@@ -7,13 +7,13 @@ from django.contrib.auth.models import User
 from .models import Product, Company, Supplier, Brand, Category
 from .forms import ProductForm, SupplierForm, BrandForm, CategoryForm
 from django.contrib.auth.decorators import login_required
-from django.utils import timezone
 from django.db import IntegrityError
 from django.contrib import messages
+from datetime import datetime
 
 # Create your views here.
+company = Company.objects.first()
 def home(request):
-    company = Company.objects.first()
     data = {
         'company': company,
     }
@@ -72,12 +72,10 @@ def signin(request):
     
 
 def products(request):
-    company = Company.objects.first()
     products = Product.objects.all().order_by('id')
     brands = Brand.objects.all()
     categories = Category.objects.all()
     suppliers = Supplier.objects.all()
-    users = User.objects.all()
     status_choices = Product.Status.choices
     
     if request.method == 'GET':
@@ -94,15 +92,17 @@ def products(request):
             'brands': brands,
             'categories': categories,
             'suppliers': suppliers,
-            'users': users,
             'status_choices': status_choices,
+            'expiration_date': datetime.now().strftime('%Y-%m-%d T %H:%M')
         }
         return render(request, 'ventas/products/products.html', data)
     
     elif request.method == 'POST':
         form = ProductForm(request.POST)
         if form.is_valid():
-            form.save()
+            product = form.save(commit=False)
+            product.user = request.user
+            product.save()
             return redirect('ventas:products')
         else:
             products = Product.objects.all().order_by('id')  # Asegúrate de que los productos se vuelvan a cargar
@@ -116,19 +116,13 @@ def products(request):
                 'brands': brands,
                 'categories': categories,
                 'suppliers': suppliers,
-                'users': users,
                 'status_choices': status_choices,
+                'expiration_date': datetime.now().strftime('%Y-%m-%d T %H:%M')
             }
             return render(request, 'ventas/products/products.html', data)
         
 def view_product(request, product_id):
-    company = Company.objects.first()
-    product = get_object_or_404(Product, id=product_id)  # Fetch the specific product or return 404
-    brands = Brand.objects.all()
-    categories = Category.objects.all()
-    suppliers = Supplier.objects.all()
-    users = User.objects.all()
-    status_choices = Product.Status.choices
+    product = get_object_or_404(Product, pk=product_id)  # Fetch the specific product or return 404
      
     if request.method == 'GET':
         query = request.GET.get('q')
@@ -141,24 +135,16 @@ def view_product(request, product_id):
         return render(request, 'ventas/products/view_product.html', {
             'title1': "Producto",
             'title2': "Visualizar De Producto",
-            'form': ProductForm(),
             'product': product,  # Pass the single product to the template
             'related_products': related_products,  # Pass related products if any
             'company': company,
-            'brands': brands,
-            'categories': categories,
-            'suppliers': suppliers,
-            'users': users,
-            'status_choices': status_choices,
         })
         
 def update_product(request, product_id):
-    company = Company.objects.first()
     product = get_object_or_404(Product, pk=product_id)
     brands = Brand.objects.all()
     categories = Category.objects.all()
     suppliers = Supplier.objects.all()
-    users = User.objects.all()
     status_choices = Product.Status.choices
     
     if request.method == 'POST':
@@ -177,7 +163,7 @@ def update_product(request, product_id):
                 'brands': brands,
                 'categories': categories,
                 'suppliers': suppliers,
-                'users': users,
+
                 'status_choices': status_choices,
             })
     else:
@@ -191,14 +177,12 @@ def update_product(request, product_id):
             'brands': brands,
             'categories': categories,
             'suppliers': suppliers,
-            'users': users,
             'status_choices': status_choices,
         }
         return render(request, 'ventas/products/update_product.html', data)
         
 def delete_product(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
-    company = Company.objects.first()
     if request.method == 'POST':
         product.delete()
         messages.success(request, 'Product deleted successfully!')
@@ -213,7 +197,6 @@ def delete_product(request, product_id):
     
     
 def suppliers(request):
-    company = Company.objects.first()
     suppliers = Supplier.objects.all().order_by('id')
     
     if request.method == 'GET':
@@ -232,7 +215,9 @@ def suppliers(request):
     elif request.method == 'POST':
         form = SupplierForm(request.POST)
         if form.is_valid():
-            form.save()
+            supplier = form.save(commit=False)
+            supplier.user = request.user
+            supplier.save()
             return redirect('ventas:suppliers')
         else:
             print(form.errors)  # Añadir esto para ver errores en la consola
@@ -247,12 +232,13 @@ def suppliers(request):
             return render(request, 'ventas/suppliers/suppliers.html', data)  # Added return statement                                                                                                                                                                                                                              
     
 def update_supplier(request, supplier_id):
-    company = Company.objects.first()
     supplier = get_object_or_404(Supplier, pk=supplier_id)
     if request.method == 'POST':
         form = SupplierForm(request.POST, instance=supplier)
         if form.is_valid():
-            form.save()
+            supplier = form.save(commit=False)
+            supplier.user = request.user
+            supplier.save()
             return redirect('ventas:suppliers')
         else:
             return render(request, 'ventas/suppliers/update_supplier.html', {
@@ -275,7 +261,6 @@ def update_supplier(request, supplier_id):
         return render(request, 'ventas/suppliers/update_supplier.html', data)
     
 def delete_supplier(request, supplier_id):
-    company = Company.objects.first()
     supplier = get_object_or_404(Supplier, pk=supplier_id)
     if request.method == 'POST':
         supplier.delete()
@@ -291,9 +276,7 @@ def delete_supplier(request, supplier_id):
     
     
 def brands(request):
-    company = Company.objects.first()
     brands = Brand.objects.all().order_by('id')
-    users = User.objects.all()
     
     if request.method == 'GET':
         query = request.GET.get('q')
@@ -305,13 +288,14 @@ def brands(request):
             "form": BrandForm(),
             'brands': brands,
             'company': company,
-            'users': users,
         }
         return render(request, 'ventas/brands/brands.html', data)
     elif request.method == 'POST':
         form = BrandForm(request.POST)
         if form.is_valid():
-            form.save()
+            brand = form.save(commit=False)
+            brand.user = request.user
+            brand.save()
             return redirect('ventas:brands')
         else:
             data={
@@ -321,19 +305,19 @@ def brands(request):
                 "title2": "Brands Query",
                 'brands': brands,
                 'company': company,
-                'users': users,
+
             }
             render(request, 'ventas/brands/brands.html', data)
 
 def update_brand(request, brand_id):
-    company = Company.objects.first()
     brand = get_object_or_404(Brand, pk=brand_id)
-    users = User.objects.all()
     
     if request.method == 'POST':
         form = BrandForm(request.POST, instance=brand)
         if form.is_valid():
-            form.save()
+            brand = form.save(commit=False)
+            brand.user = request.user
+            brand.save()
             return redirect('ventas:brands')
         else:
             return render(request, 'ventas/brands/update_brand.html', {
@@ -343,7 +327,7 @@ def update_brand(request, brand_id):
                 'title2': "Update Brands",
                 'brand': brand,
                 'company': company,
-                'users': users,
+
             })
     else:
         form = BrandForm(instance=brand)
@@ -353,12 +337,10 @@ def update_brand(request, brand_id):
             "title2": "Update Brands",
             'brand': brand,
             'company': company,
-            'users': users,
         }
         return render(request, 'ventas/brands/update_brand.html', data)
 
 def delete_brand(request, brand_id):
-    company = Company.objects.first()
     brand = get_object_or_404(Brand, pk=brand_id)
     
     if request.method == 'POST':
@@ -375,9 +357,7 @@ def delete_brand(request, brand_id):
 
 
 def categories(request):
-    company = Company.objects.first()
     categories = Category.objects.all().order_by('id')
-    users = User.objects.all()
     
     if request.method == 'GET':
         query = request.GET.get('q')
@@ -389,13 +369,14 @@ def categories(request):
             "form": CategoryForm(),
             'categories': categories,
             'company': company,
-            'users': users,
         }
         return render(request, 'ventas/categories/categories.html', data)
     elif request.method == 'POST':
         form = CategoryForm(request.POST)
         if form.is_valid():
-            form.save()
+            category = form.save(commit=False)
+            category.user = request.user
+            category.save()
             return redirect('ventas:categories')
         else:
             data={
@@ -405,14 +386,12 @@ def categories(request):
                 "title2": "Categories Query",
                 'categories': categories,
                 'company': company,
-                'users': users,
+
             }
             render(request, 'ventas/categories/categories.html', data)
 
 def update_category(request, category_id):
-    company = Company.objects.first()
     category = get_object_or_404(Category, pk=category_id)
-    users = User.objects.all()
     
     if request.method == 'POST':
         form = CategoryForm(request.POST, instance=category)
@@ -427,7 +406,6 @@ def update_category(request, category_id):
                 'title2': "Update Categories",
                 'category': category,
                 'company': company,
-                'users': users,
             })
     else:
         form = CategoryForm(instance=category)
@@ -437,13 +415,11 @@ def update_category(request, category_id):
             "title2": "Update Categories",
             'category': category,
             'company': company,
-            'users': users,
         }
         return render(request, 'ventas/categories/update_category.html', data)
 
 def delete_category(request, category_id):
     category = get_object_or_404(Category, pk=category_id)
-    company = Company.objects.first()
     if request.method == 'POST':
         category.delete()
         messages.success(request, 'Product deleted successfully!')

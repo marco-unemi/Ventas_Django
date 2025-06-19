@@ -63,7 +63,7 @@
 
                             <div class="col-sm-6 mb-3">
                                 <label for="id_expiration_date" class="form-label">Expiration Date:</label>
-                                <input type="text" name="expiration_date" class="form-control" value="{{ product.expiration_date|date:'d/m/Y  , P' }}" required=""
+                                <input type="text" name="expiration_date" class="form-control" value="{{ product.expiration_date|date:'Y/m/d  TH:m' }}" required=""
                                     id="id_expiration_date">
                             </div>
 
@@ -102,18 +102,9 @@
                                 </select>
                             </div>
 
-                            <div class="col-sm-6 mb-3">
-                                <label for="id_user" class="form-label">User:</label>
-                                <select name="user" class="form-select" required id="id_user">
-                                    {% for user in users %}
-                                    <option value="{{ user.id }}" {% if product.user_id == user.id %}selected{% endif %}>{{ user.username }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-
                             <div class="col-sm-6 my-3">
                                 <label for="id_state" class="form-label">State:</label>
-                                <input type="checkbox" name="state" class="form-check-input" id="id_state" checked value="product.state">
+                                <input type="checkbox" name="state" class="form-check-input" id="id_state" {% if category.state %}checked{% endif %}>
                             </div>
 
                             <div class="col-12 text-end border-white mt-3">
@@ -122,6 +113,7 @@
 
                         </div>
                     </form>
+                    
                 </div>
             </div>
         </div>

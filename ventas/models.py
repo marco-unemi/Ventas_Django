@@ -38,7 +38,6 @@ class Supplier(models.Model):
     address = models.CharField(max_length=200)
     phone = models.CharField(max_length=20,validators=[phone_regex])
     user = models.ForeignKey(User,on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='suppliers/',blank=True,null=True,default='suppliers/persona1.svg')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     state = models.BooleanField('Activo', default = True)

@@ -37,11 +37,8 @@
                             <thead>
                                 <tr>
                                     <th class="bg-secondary">Description</th>
-                                    <th class="bg-secondary">Suppliers</th>
                                     <th class="bg-secondary">Price</th>
                                     <th class="bg-secondary">Stock</th>
-                                    <th class="bg-secondary">Created</th>
-                                    <th class="bg-secondary">updated</th>
                                     
                                     <th class="bg-secondary">Acciones</th>
                                 </tr>
@@ -50,11 +47,9 @@
                                 {% for product in products %}
                                 <tr>
                                     <td class="text-center">{{ product.description }}</td>
-                                    <td class="text-center">{{ product.supplier }}</td>
                                     <td class="text-center">{{ product.price }}</td>
                                     <td class="text-center">{{ product.stock }}</td>
-                                    <td class="text-center">{{ product.created|date:"d/m/Y , P" }}</td>
-                                    <td class="text-center">{{ product.updated|date:"d/m/Y , P" }}</td>
+                                    <!-- <td class="text-center">{{ product.created|date:"d/m/Y , P" }}</td> -->
                                     <td class="text-center">
                                         <div class="dropdown-center">
                                             <button class="btn btn-secondary btn-sm dropdown-toggle" type="button"
@@ -145,7 +140,7 @@
 
                         <div class="col-sm-6 mb-3">
                             <label for="id_expiration_date" class="form-label">Expiration Date:</label>
-                            <input type="date" name="expiration_date" class="form-control" value=""
+                            <input type="text" name="expiration_date" class="form-control" value="{{ form.expiration_date.value|date:'Y-m-d\TH:i' }}"
                                 required="" id="id_expiration_date">
                         </div>
                         
@@ -183,18 +178,6 @@
                                 {% if suppliers %}
                                 {% for supplier in suppliers %}
                                     <option value="{{ supplier.id }}">{{ supplier.name }}</option>
-                                {% endfor %}
-                                {% endif %}
-                            </select>
-                        </div>
-
-                        <div class="col-sm-6 mb-3">
-                            <label for="id_user" class="form-label">User:</label>
-                            <select name="user" class="form-select" required id="id_user">
-                                <option value="" selected>---------</option>
-                                {% if users %}
-                                {% for user in users %}
-                                <option value="{{ user.id }}">{{ user.username }}</option>
                                 {% endfor %}
                                 {% endif %}
                             </select>

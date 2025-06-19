@@ -11,10 +11,6 @@ body {
     background: linear-gradient(to right, rgb(231, 200, 170), rgb(223, 214, 202) 0%, #c9b7a4 100%);
 }
 
-#nav {
-    background: linear-gradient(to right, #0e710e, #12c064);
-}
-
 #contenido-login {
     padding-top: 8%;
 }

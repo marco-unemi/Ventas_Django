@@ -15,7 +15,7 @@
 </head>
 <body>
     <header id="header" class="shadow">
-        <nav class="navbar navbar-expand-lg sticky-top justify-content-between" id="nav">
+        <nav class="navbar navbar-expand-lg bg-black navbar-dark sticky-top justify-content-between" id="nav">
             <!--Brand-->
             <a href="#" class="navbar-brand mx-5">
                 <h2 class="text-warning">{{ company.business_name }}</h2>
@@ -74,7 +74,7 @@
                                 </div>
                                 <i class="bi bi-person-circle"></i>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark bg-black"
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark"
                                 aria-labelledby="btn-dropdown-informacion" style="width: auto;">
                                 <li class="text-center ">
                                     <a class="btn btn-outline-danger" href="{% url 'ventas:signout' %}"
